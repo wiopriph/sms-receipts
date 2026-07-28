@@ -1,0 +1,592 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --accent: #e6000e;
+    --accent: oklch(0.58 0.24 27.85);
+    --ink: #374151;
+    --gray: #6b7280;
+    --muted: #9ca3af;
+    --faint-line: #f3f4f6;
+    --card-background: #f9fafb;
+}
+
+body {
+    margin: 0;
+    font-family: 'Sarabun', 'Helvetica Neue', Arial, sans-serif;
+    background: #f2f2f3;
+    color: #1a1a1a;
+}
+
+.layout {
+    display: flex;
+    gap: 24px;
+    padding: 24px;
+    align-items: flex-start;
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+/* ---------- form panel ---------- */
+.panel {
+    flex: 0 0 420px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .12);
+    position: sticky;
+    top: 24px;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+}
+
+.panel h1 {
+    font-size: 18px;
+    margin: 0 0 14px;
+}
+
+.panel h2 {
+    font-size: 14px;
+    margin: 18px 0 8px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+.field {
+    margin-bottom: 10px;
+}
+
+.field label {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 3px;
+}
+
+.field input, .field textarea {
+    width: 100%;
+    padding: 7px 9px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 16px;
+}
+
+.field input:focus, .field textarea:focus {
+    outline: 2px solid rgba(230, 0, 14, .25);
+    border-color: var(--accent);
+}
+
+.form-row {
+    display: flex;
+    gap: 10px;
+}
+
+.form-row > .field {
+    flex: 1;
+}
+
+.item-card {
+    border: 1px solid #e2e2e2;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: #fafafa;
+}
+
+.item-card .item-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #444;
+}
+
+.item-amount {
+    text-align: right;
+    font-size: 13px;
+    color: #555;
+}
+
+.discount-field {
+    margin-top: 10px;
+}
+
+.totals-summary {
+    font-size: 14px;
+    margin-top: 10px;
+    color: #555;
+}
+
+.totals-summary-total {
+    font-size: 15px;
+    color: #1a1a1a;
+}
+
+.totals-summary-words {
+    color: #777;
+    font-size: 13px;
+}
+
+button {
+    font: inherit;
+    cursor: pointer;
+}
+
+.btn-small {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 12px;
+    padding: 2px 4px;
+}
+
+.btn-add {
+    width: 100%;
+    padding: 8px;
+    background: #fff;
+    border: 1px dashed #aaa;
+    border-radius: 8px;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.btn-add:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.btn-generate {
+    width: 100%;
+    padding: 13px;
+    margin-top: 14px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.btn-generate:hover {
+    filter: brightness(.92);
+}
+
+.btn-generate:disabled {
+    background: #999;
+    cursor: wait;
+}
+
+details.shop-details {
+    margin-top: 6px;
+}
+
+details.shop-details summary {
+    cursor: pointer;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+/* ---------- preview ---------- */
+.preview-container {
+    flex: 1;
+    min-width: 0;
+}
+
+.sheet-scaler {
+    transform-origin: top left;
+    width: 794px;
+}
+
+/* ---------- A4 sheet ---------- */
+.sheet {
+    width: 794px; /* 210mm @ 96dpi */
+    min-height: 1123px; /* 297mm @ 96dpi */
+    background: #fff;
+    padding: 47px 57px;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 15px;
+    color: #111;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .18);
+}
+
+/* ---------- receipt (minimal, red accent, corporate) ---------- */
+.receipt {
+    color: var(--ink);
+    font-size: 14px;
+}
+
+.rc-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.rc-identity {
+    min-width: 0;
+}
+
+.rc-logo {
+    height: 44px;
+    width: auto;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.rc-shop-name {
+    font-size: 27px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1.2;
+    letter-spacing: -.2px;
+}
+
+.rc-contact {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--gray);
+    line-height: 1.7;
+}
+
+.rc-doc-title {
+    text-align: right;
+    flex: 0 0 auto;
+    padding-top: 4px;
+}
+
+.rc-title-th {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.rc-title-en {
+    font-size: 9.5px;
+    letter-spacing: 3.5px;
+    color: var(--muted);
+    margin-top: 3px;
+}
+
+.rc-doc-meta {
+    margin-top: 14px;
+    font-size: 12.5px;
+}
+
+.rc-meta-line {
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+    padding: 2.5px 0;
+}
+
+.rc-meta-line .label {
+    color: var(--gray);
+}
+
+.rc-meta-line .label i {
+    font-style: normal;
+    font-size: 9px;
+    letter-spacing: .5px;
+    color: var(--muted);
+    margin-left: 4px;
+}
+
+.rc-meta-line .value {
+    color: var(--ink);
+    min-width: 88px;
+    text-align: right;
+}
+
+.rc-rule {
+    border-bottom: 2px solid var(--accent);
+    margin-top: 16px;
+}
+
+/* ---------- bill to ---------- */
+.rc-bill-to {
+    margin-top: 20px;
+}
+
+.rc-bill-to-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 44px;
+}
+
+.rc-section-title {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.rc-section-title span {
+    font-size: 9.5px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-left: 6px;
+}
+
+.rc-field {
+    display: flex;
+    gap: 12px;
+    padding: 2.5px 0;
+    font-size: 13px;
+}
+
+.rc-field .label {
+    flex: 0 0 118px;
+    color: var(--gray);
+}
+
+.rc-field .label i {
+    font-style: normal;
+    font-size: 10px;
+    color: var(--muted);
+    margin-left: 5px;
+}
+
+.rc-field .value {
+    flex: 1;
+    min-width: 0;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+}
+
+/* ---------- items table ---------- */
+table.rc-items {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    font-size: 13.5px;
+}
+
+table.rc-items th.description {
+    width: 100%;
+    text-align: left;
+}
+
+table.rc-items td.description {
+    overflow-wrap: anywhere;
+}
+
+table.rc-items th, table.rc-items td {
+    padding: 10px;
+}
+
+table.rc-items thead th {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 13px;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 8px;
+    white-space: nowrap;
+}
+
+table.rc-items thead .label-en {
+    display: block;
+    font-size: 8.5px;
+    font-weight: 400;
+    letter-spacing: 1.2px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+table.rc-items td {
+    border-bottom: 1px solid var(--faint-line);
+    color: var(--ink);
+}
+
+table.rc-items th.align-center, table.rc-items td.align-center {
+    text-align: center;
+}
+
+table.rc-items th.align-right, table.rc-items td.align-right {
+    text-align: right;
+}
+
+.numeric {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- payment + totals row ---------- */
+.rc-totals-row {
+    display: flex;
+    gap: 36px;
+    margin-top: 24px;
+    align-items: flex-start;
+}
+
+.rc-payment-spacer {
+    flex: 1;
+}
+
+.rc-payment-card {
+    flex: 1;
+    background: var(--card-background);
+    border-radius: 8px;
+    padding: 14px 18px;
+    max-width: 400px;
+}
+
+.rc-payment-card .rc-section-title {
+    margin-bottom: 10px;
+}
+
+.rc-payment-body {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+}
+
+.rc-qr {
+    width: 96px;
+    height: auto;
+    border-radius: 6px;
+    flex: 0 0 auto;
+    background: #fff;
+}
+
+.rc-banks {
+    margin: 2px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 12.5px;
+    color: var(--ink);
+}
+
+.rc-banks li {
+    margin: 6px 0;
+    overflow-wrap: anywhere;
+}
+
+.rc-banks li::before {
+    content: '\2022';
+    color: var(--accent);
+    margin-right: 7px;
+}
+
+.rc-totals {
+    flex: 0 0 290px;
+}
+
+.rc-totals-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 2px;
+    font-size: 13px;
+    color: var(--gray);
+}
+
+.rc-totals-line i, .rc-totals-total i {
+    font-style: normal;
+    font-size: 10px;
+    color: var(--muted);
+    margin-left: 5px;
+}
+
+.rc-totals-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-top: 2px solid var(--accent);
+    margin-top: 6px;
+    padding: 10px 2px 0;
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.rc-total-amount {
+    font-size: 24px;
+    letter-spacing: -.3px;
+}
+
+.rc-words {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 8px;
+    text-align: right;
+}
+
+/* ---------- signatures ---------- */
+.rc-signatures {
+    display: flex;
+    gap: 60px;
+    margin-top: 56px;
+}
+
+.rc-signature {
+    flex: 1;
+    max-width: 280px;
+}
+
+.rc-signature-line {
+    border-bottom: 1px solid #d1d5db;
+    height: 44px;
+}
+
+.rc-signature-label {
+    font-size: 12.5px;
+    color: var(--ink);
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.rc-signature-label span {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--muted);
+    margin-left: 6px;
+}
+
+.rc-signature-date {
+    font-size: 11.5px;
+    color: var(--gray);
+    margin-top: 10px;
+}
+
+.rc-signature-date span {
+    font-size: 9.5px;
+    color: var(--muted);
+}
+
+.rc-signature-date-value {
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.rc-note {
+    margin-top: 40px;
+    font-size: 11px;
+    color: var(--muted);
+}
+
+/* ---------- mobile ---------- */
+@media (max-width: 1100px) {
+    .layout {
+        flex-direction: column;
+        gap: 16px;
+        padding: 12px;
+    }
+
+    .panel {
+        position: static;
+        flex: none;
+        width: 100%;
+        max-height: none;
+    }
+
+    .preview-container {
+        width: 100%;
+        overflow: hidden;
+    }
+}
