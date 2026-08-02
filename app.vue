@@ -23,7 +23,7 @@ const shop = reactive({
   email: '',
   website: 'www.supermansamui.com',
   taxId: '',
-  banks: 'ตรงนี้เราจะใส่ข้อมูลบัญชีธนาคารครับ', // one account per line
+  banks: 'ธนาคารกสิกรไทย นายอุเทน ชำานาญเสียง 8002056748', // one account per line
   note: '',
   logo: '', // PNG dataURL
   qr: '', // PNG dataURL
