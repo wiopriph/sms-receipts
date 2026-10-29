@@ -12,9 +12,25 @@ interface ReceiptItem {
 const A4_WIDTH_PX = 794; // 210mm @ 96dpi
 const A4_HEIGHT_PX = 1123; // 297mm @ 96dpi
 const SHOP_STORAGE_KEY = 'receipt-shop';
+const DRAFT_STORAGE_KEY = 'receipt-draft';
 
-const todayIsoDate = new Date().toISOString()
+const todayIsoDate = () => new Date().toISOString()
   .slice(0, 10);
+
+const emptyItem = (): ReceiptItem => ({ description: '', qty: null, unit: '', price: null });
+
+const emptyReceiptDetails = () => ({
+  book: '',
+  number: '',
+  date: todayIsoDate(),
+  discount: null as number | null,
+  customerCompany: '',
+  customer: '',
+  customerAddress: '',
+  customerPhone: '',
+  customerEmail: '',
+  customerTaxId: '',
+});
 
 const shop = reactive({
   name: '',
@@ -29,28 +45,50 @@ const shop = reactive({
   qr: '', // PNG dataURL
 });
 
-const receiptDetails = reactive({
-  book: '',
-  number: '',
-  date: todayIsoDate,
-  discount: null as number | null,
-  customerCompany: '',
-  customer: '',
-  customerAddress: '',
-  customerPhone: '',
-  customerEmail: '',
-  customerTaxId: '',
-});
+const receiptDetails = reactive(emptyReceiptDetails());
 
-const items = ref<ReceiptItem[]>([{ description: '', qty: null, unit: '', price: null }]);
+const items = ref<ReceiptItem[]>([emptyItem()]);
 
 function addItem() {
-  items.value.push({ description: '', qty: null, unit: '', price: null });
+  items.value.push(emptyItem());
 }
 
 function removeItem(index: number) {
   items.value.splice(index, 1);
 }
+
+function clearReceipt() {
+  if (!confirm('Clear all receipt fields? (ล้างข้อมูลใบเสร็จทั้งหมด?)')) {
+    return;
+  }
+
+  Object.assign(receiptDetails, emptyReceiptDetails());
+  items.value = [emptyItem()];
+}
+
+onMounted(() => {
+  const savedJson = localStorage.getItem(DRAFT_STORAGE_KEY);
+
+  if (savedJson) {
+    try {
+      const draft = JSON.parse(savedJson);
+
+      Object.assign(receiptDetails, draft.details);
+
+      if (Array.isArray(draft.items) && draft.items.length) {
+        items.value = draft.items;
+      }
+    } catch {
+      localStorage.removeItem(DRAFT_STORAGE_KEY);
+    }
+  }
+
+  watch(
+    [receiptDetails, items],
+    () => localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify({ details: receiptDetails, items: items.value })),
+    { deep: true },
+  );
+});
 
 onMounted(async () => {
   const savedJson = localStorage.getItem(SHOP_STORAGE_KEY);
@@ -199,14 +237,35 @@ onMounted(() => {
   updatePreviewScale();
 });
 
+function receiptFilename(extension: 'pdf' | 'png'): string {
+  const date = receiptDate.value;
+  const buddhistYear = date.getFullYear() + 543;
+
+  return `ใบเสร็จรับเงิน${receiptDetails.customer ? `_${receiptDetails.customer}` : ''}_${date.getDate()}-${date.getMonth() + 1}-${buddhistYear}.${extension}`;
+}
+
+async function generatePng() {
+  if (!sheetElement.value) {
+    return;
+  }
+
+  isGenerating.value = true;
+
+  try {
+    const { generateReceiptPng } = await import('~/utils/png');
+
+    await generateReceiptPng(sheetElement.value, receiptFilename('png'));
+  } finally {
+    isGenerating.value = false;
+  }
+}
+
 async function generatePdf() {
   isGenerating.value = true;
 
   try {
     const { generateReceiptPdf } = await import('~/utils/pdf');
     const date = receiptDate.value;
-    const buddhistYear = date.getFullYear() + 543;
-    const filename = `ใบเสร็จรับเงิน${receiptDetails.customer ? `_${receiptDetails.customer}` : ''}_${date.getDate()}-${date.getMonth() + 1}-${buddhistYear}.pdf`;
 
     await generateReceiptPdf(
       {
@@ -226,7 +285,7 @@ async function generatePdf() {
         total: total.value,
         totalWords: totalWords.value,
       },
-      filename,
+      receiptFilename('pdf'),
     );
   } finally {
     isGenerating.value = false;
@@ -521,13 +580,33 @@ async function generatePdf() {
         </div>
       </details>
 
+      <div class="generate-row">
+        <button
+          type="button"
+          class="btn-generate"
+          :disabled="isGenerating"
+          @click="generatePdf"
+        >
+          {{ isGenerating ? 'Generating…' : 'Generate PDF' }}
+        </button>
+
+        <button
+          type="button"
+          class="btn-generate btn-generate-secondary"
+          :disabled="isGenerating"
+          @click="generatePng"
+        >
+          {{ isGenerating ? 'Generating…' : 'Generate PNG' }}
+        </button>
+      </div>
+
       <button
         type="button"
-        class="btn-generate"
+        class="btn-clear"
         :disabled="isGenerating"
-        @click="generatePdf"
+        @click="clearReceipt"
       >
-        {{ isGenerating ? 'Generating…' : 'Generate PDF' }}
+        Clear receipt fields (ล้างข้อมูล)
       </button>
     </div>
 

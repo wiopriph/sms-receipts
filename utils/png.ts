@@ -1,0 +1,19 @@
+import { domToPng } from 'modern-screenshot';
+
+
+// rasterizes the live A4 preview; scale 2 gives ~150dpi, enough for messengers and print
+const PNG_SCALE = 2;
+
+export async function generateReceiptPng(sheet: HTMLElement, filename: string): Promise<void> {
+  const dataUrl = await domToPng(sheet, {
+    scale: PNG_SCALE,
+    backgroundColor: '#ffffff',
+    style: { boxShadow: 'none' },
+  });
+
+  const link = document.createElement('a');
+
+  link.href = dataUrl;
+  link.download = filename;
+  link.click();
+}

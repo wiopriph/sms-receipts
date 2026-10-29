@@ -160,10 +160,16 @@ button {
     color: var(--accent);
 }
 
-.btn-generate {
-    width: 100%;
-    padding: 13px;
+.generate-row {
+    display: flex;
+    gap: 10px;
     margin-top: 14px;
+}
+
+.btn-generate {
+    flex: 1;
+    min-width: 0;
+    padding: 13px;
     background: var(--accent);
     color: #fff;
     border: none;
@@ -179,6 +185,34 @@ button {
 .btn-generate:disabled {
     background: #999;
     cursor: wait;
+}
+
+.btn-generate-secondary {
+    background: #fff;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+    padding: 11px;
+}
+
+.btn-generate-secondary:disabled {
+    background: #fff;
+    color: #999;
+    border-color: #999;
+}
+
+.btn-clear {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 13px;
+    text-decoration: underline;
+}
+
+.btn-clear:hover {
+    color: var(--accent);
 }
 
 details.shop-details {
