@@ -6,6 +6,10 @@ const PNG_SCALE = 2;
 
 export async function generateReceiptPng(sheet: HTMLElement, filename: string): Promise<void> {
   const dataUrl = await domToPng(sheet, {
+    // layout size, not getBoundingClientRect: the preview is scaled down with
+    // a CSS transform on narrow screens and the default measurement crops the image
+    width: sheet.offsetWidth,
+    height: sheet.offsetHeight,
     scale: PNG_SCALE,
     backgroundColor: '#ffffff',
     style: { boxShadow: 'none' },
