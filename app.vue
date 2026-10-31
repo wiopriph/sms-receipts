@@ -24,6 +24,7 @@ const emptyReceiptDetails = () => ({
   number: '',
   date: todayIsoDate(),
   discount: null as number | null,
+  deposit: null as number | null,
   customerCompany: '',
   customer: '',
   customerAddress: '',
@@ -164,7 +165,9 @@ function itemAmount(item: ReceiptItem): number {
 const subtotal = computed(() => items.value.reduce((sum, item) => sum + itemAmount(item), 0));
 const discountAmount = computed(() => Math.min(Math.max(receiptDetails.discount || 0, 0), subtotal.value));
 const total = computed(() => subtotal.value - discountAmount.value);
-const totalWords = computed(() => (total.value > 0 ? bahtText(total.value) : ''));
+const depositAmount = computed(() => Math.min(Math.max(receiptDetails.deposit || 0, 0), total.value));
+const amountDue = computed(() => total.value - depositAmount.value);
+const totalWords = computed(() => (amountDue.value > 0 ? bahtText(amountDue.value) : ''));
 
 const receiptDate = computed(() => new Date(`${receiptDetails.date}T00:00:00`));
 
@@ -283,6 +286,8 @@ async function generatePdf() {
         subtotal: subtotal.value,
         discount: discountAmount.value,
         total: total.value,
+        deposit: depositAmount.value,
+        amountDue: amountDue.value,
         totalWords: totalWords.value,
       },
       receiptFilename('pdf'),
@@ -439,15 +444,28 @@ async function generatePdf() {
         + add item
       </button>
 
-      <div class="field discount-field">
-        <label>Discount, ฿ (ส่วนลด)</label>
+      <div class="form-row">
+        <div class="field discount-field">
+          <label>Discount, ฿ (ส่วนลด)</label>
 
-        <input
-          v-model.number="receiptDetails.discount"
-          type="number"
-          min="0"
-          placeholder="0"
-        >
+          <input
+            v-model.number="receiptDetails.discount"
+            type="number"
+            min="0"
+            placeholder="0"
+          >
+        </div>
+
+        <div class="field discount-field">
+          <label>Deposit paid, ฿ (มัดจำ)</label>
+
+          <input
+            v-model.number="receiptDetails.deposit"
+            type="number"
+            min="0"
+            placeholder="0"
+          >
+        </div>
       </div>
 
       <div class="totals-summary">
@@ -459,8 +477,19 @@ async function generatePdf() {
           Discount: −<b>{{ formatAmount(discountAmount) }}</b> ฿
         </div>
 
-        <div class="totals-summary-total">
+        <div :class="{ 'totals-summary-total': !depositAmount }">
           Total: <b>{{ formatAmount(total) }}</b> ฿
+        </div>
+
+        <div v-if="depositAmount > 0">
+          Deposit: −<b>{{ formatAmount(depositAmount) }}</b> ฿
+        </div>
+
+        <div
+          v-if="depositAmount > 0"
+          class="totals-summary-total"
+        >
+          Balance due: <b>{{ formatAmount(amountDue) }}</b> ฿
         </div>
 
         <div
@@ -842,7 +871,30 @@ async function generatePdf() {
                 <span class="numeric">−{{ formatAmount(discountAmount) }}</span>
               </div>
 
-              <div class="rc-totals-total">
+              <template v-if="depositAmount > 0">
+                <div class="rc-totals-line">
+                  <span>รวมเงิน <i>Total</i></span>
+
+                  <span class="numeric">{{ formatAmount(total) }}</span>
+                </div>
+
+                <div class="rc-totals-line">
+                  <span>มัดจำ <i>Deposit</i></span>
+
+                  <span class="numeric">−{{ formatAmount(depositAmount) }}</span>
+                </div>
+
+                <div class="rc-totals-total">
+                  <span>ยอดคงเหลือ <i>BALANCE DUE</i></span>
+
+                  <span class="rc-total-amount numeric">{{ formatBaht(amountDue) }}</span>
+                </div>
+              </template>
+
+              <div
+                v-else
+                class="rc-totals-total"
+              >
                 <span>รวมเงิน <i>TOTAL</i></span>
 
                 <span class="rc-total-amount numeric">{{ formatBaht(total) }}</span>

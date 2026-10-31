@@ -34,6 +34,8 @@ export interface ReceiptData {
   subtotal: number
   discount: number
   total: number
+  deposit: number
+  amountDue: number // total minus deposit; equals total when there is no deposit
   totalWords: string
 }
 
@@ -475,6 +477,13 @@ export async function generateReceiptPdf(receipt: ReceiptData, filename: string,
     totalsColumn.push(totalsLine('ส่วนลด', 'DISCOUNT', `−${formatAmount(receipt.discount)}`));
   }
 
+  const hasDeposit = receipt.deposit > 0;
+
+  if (hasDeposit) {
+    totalsColumn.push(totalsLine('รวมเงิน', 'TOTAL', formatAmount(receipt.total)));
+    totalsColumn.push(totalsLine('มัดจำ', 'DEPOSIT', `−${formatAmount(receipt.deposit)}`));
+  }
+
   totalsColumn.push({ ...horizontalRule(210, ACCENT_COLOR), margin: [0, 5, 0, 0] });
 
   totalsColumn.push({
@@ -482,14 +491,14 @@ export async function generateReceiptPdf(receipt: ReceiptData, filename: string,
       {
         width: '*',
         text: [
-          { text: 'รวมเงิน', bold: true, color: ACCENT_COLOR, fontSize: 11 },
-          { text: '  TOTAL', fontSize: 7.5, characterSpacing: 1.5, color: MUTED_COLOR },
+          { text: hasDeposit ? 'ยอดคงเหลือ' : 'รวมเงิน', bold: true, color: ACCENT_COLOR, fontSize: 11 },
+          { text: hasDeposit ? '  BALANCE DUE' : '  TOTAL', fontSize: 7.5, characterSpacing: 1.5, color: MUTED_COLOR },
         ],
         margin: [0, 9, 0, 0],
       },
       {
         width: 'auto',
-        text: formatBahtAmount(receipt.total),
+        text: formatBahtAmount(receipt.amountDue),
         alignment: 'right',
         bold: true,
         fontSize: 17,

@@ -11,7 +11,8 @@ A single-page Nuxt app (SPA, no SSR) that generates Thai delivery/receipt PDFs
 - PNG export (A4 at 2x, ~150dpi) rasterized from the live preview via
   [modern-screenshot](https://github.com/qq15725/modern-screenshot), handy for messengers.
 - Amount in Thai words (บาทถ้วน), Buddhist-era filename, ฿ currency on the total.
-- Items with quantity/unit price, optional discount, subtotal/total block.
+- Items with quantity/unit price, optional discount and deposit (prepayment),
+  subtotal/total block; with a deposit the document shows the balance due.
 - Shop details (name, address, phone, website, tax ID, bank accounts, logo,
   payment QR) persist in `localStorage`; empty fields are hidden on the document.
 - Receipt fields and items also persist in `localStorage`, so a reload does not
